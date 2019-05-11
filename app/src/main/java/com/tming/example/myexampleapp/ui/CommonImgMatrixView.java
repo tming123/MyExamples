@@ -23,20 +23,20 @@ import com.tming.example.myexampleapp.R;
  */
 public class CommonImgMatrixView extends View {
 
-    private Context context ;
-    private Bitmap mainBmp , controlBmp ;
-    private int mainBmpWidth , mainBmpHeight , controlBmpWidth , controlBmpHeight ;
-    private Matrix matrix ;
-    private float [] srcPs , dstPs ;
-    private RectF srcRect , dstRect ;
-    private Paint paint ,paintRect , paintFrame;
+    private Context context;
+    private Bitmap mainBmp, controlBmp;
+    private int mainBmpWidth, mainBmpHeight, controlBmpWidth, controlBmpHeight;
+    private Matrix matrix;
+    private float[] srcPs, dstPs;
+    private RectF srcRect, dstRect;
+    private Paint paint, paintRect, paintFrame;
     private float deltaX = 0, deltaY = 0; //位移值
     private float scaleValue = 1; //缩放值
-    private Point lastPoint ;
-    private Point prePivot , lastPivot;
-    private float preDegree , lastDegree ;
+    private Point lastPoint;
+    private Point prePivot, lastPivot;
+    private float preDegree, lastDegree;
     private short currentSelectedPointindex;        //当前操作点击点
-    private Point symmetricPoint  = new Point();    //当前操作点对称点
+    private Point symmetricPoint = new Point();    //当前操作点对称点
 
     /**
      * 图片操作类型
@@ -67,22 +67,23 @@ public class CommonImgMatrixView extends View {
     public static final int CTR_MID_MID = 8;
     public int current_ctr = CTR_NONE;
 
-    public CommonImgMatrixView(Context context){
+    public CommonImgMatrixView(Context context) {
         super(context);
-        this.context = context ;
+        this.context = context;
     }
 
     public CommonImgMatrixView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context ;
+        this.context = context;
         initData();
     }
 
     /**
      * 初始化数据
+     *
      * @author 张进
      */
-    private void initData(){
+    private void initData() {
         mainBmp = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.app_filter);
         controlBmp = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.vip_icon_diamond);
         mainBmpWidth = mainBmp.getWidth();
@@ -91,15 +92,15 @@ public class CommonImgMatrixView extends View {
         controlBmpHeight = controlBmp.getHeight();
 
         srcPs = new float[]{
-                0,0,
-                mainBmpWidth/2,0,
-                mainBmpWidth,0,
-                mainBmpWidth,mainBmpHeight/2,
-                mainBmpWidth,mainBmpHeight,
-                mainBmpWidth/2,mainBmpHeight,
-                0,mainBmpHeight,
-                0,mainBmpHeight/2,
-                mainBmpWidth/2,mainBmpHeight/2
+                0, 0,
+                mainBmpWidth / 2, 0,
+                mainBmpWidth, 0,
+                mainBmpWidth, mainBmpHeight / 2,
+                mainBmpWidth, mainBmpHeight,
+                mainBmpWidth / 2, mainBmpHeight,
+                0, mainBmpHeight,
+                0, mainBmpHeight / 2,
+                mainBmpWidth / 2, mainBmpHeight / 2
         };
         dstPs = srcPs.clone();
         srcRect = new RectF(0, 0, mainBmpWidth, mainBmpHeight);
@@ -107,10 +108,10 @@ public class CommonImgMatrixView extends View {
 
         matrix = new Matrix();
 
-        prePivot = new Point(mainBmpWidth/2, mainBmpHeight/2);
-        lastPivot = new Point(mainBmpWidth/2, mainBmpHeight/2);
+        prePivot = new Point(mainBmpWidth / 2, mainBmpHeight / 2);
+        lastPivot = new Point(mainBmpWidth / 2, mainBmpHeight / 2);
 
-        lastPoint = new Point(0,0);
+        lastPoint = new Point(0, 0);
 
         paint = new Paint();
 
@@ -128,12 +129,13 @@ public class CommonImgMatrixView extends View {
 
     /**
      * 矩阵变换，达到图形平移的目的
+     *
      * @author 张进
      */
-    private void setMatrix(int operationType){
+    private void setMatrix(int operationType) {
         switch (operationType) {
             case OPER_TRANSLATE:
-                matrix.postTranslate(deltaX , deltaY);
+                matrix.postTranslate(deltaX, deltaY);
                 break;
             case OPER_SCALE:
                 matrix.postScale(scaleValue, scaleValue, symmetricPoint.x, symmetricPoint.y);
@@ -147,32 +149,32 @@ public class CommonImgMatrixView extends View {
         matrix.mapRect(dstRect, srcRect);
     }
 
-    private boolean isOnPic(int x , int y){
-        if(dstRect.contains(x, y)){
+    private boolean isOnPic(int x, int y) {
+        if (dstRect.contains(x, y)) {
             return true;
-        }else
+        } else
             return false;
     }
 
-    private int getOperationType(MotionEvent event){
+    private int getOperationType(MotionEvent event) {
 
-        int evX = (int)event.getX();
-        int evY = (int)event.getY();
+        int evX = (int) event.getX();
+        int evY = (int) event.getY();
         int curOper = lastOper;
-        switch(event.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 current_ctr = isOnCP(evX, evY);
-                Log.i("img", "current_ctr is "+current_ctr);
-                if(current_ctr != CTR_NONE || isOnPic(evX, evY)){
+                Log.i("img", "current_ctr is " + current_ctr);
+                if (current_ctr != CTR_NONE || isOnPic(evX, evY)) {
                     curOper = OPER_SELECTED;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(current_ctr > CTR_NONE && current_ctr < CTR_MID_MID ){
+                if (current_ctr > CTR_NONE && current_ctr < CTR_MID_MID) {
                     curOper = OPER_SCALE;
-                }else if(current_ctr == CTR_MID_MID ){
+                } else if (current_ctr == CTR_MID_MID) {
                     curOper = OPER_ROTATE;
-                }else if(lastOper == OPER_SELECTED){
+                } else if (lastOper == OPER_SELECTED) {
                     curOper = OPER_TRANSLATE;
                 }
                 break;
@@ -182,31 +184,33 @@ public class CommonImgMatrixView extends View {
             default:
                 break;
         }
-        Log.d("img", "curOper is "+curOper);
+        Log.d("img", "curOper is " + curOper);
         return curOper;
     }
+
     /**
      * 判断点所在的控制点
+     *
      * @param evx
      * @param evy
      * @return
      */
     private int isOnCP(int evx, int evy) {
-        Rect rect = new Rect(evx-controlBmpWidth/2,evy-controlBmpHeight/2,evx+controlBmpWidth/2,evy+controlBmpHeight/2);
-        int res = 0 ;
-        for (int i = 0; i < dstPs.length; i+=2) {
-            if(rect.contains((int)dstPs[i], (int)dstPs[i+1])){
-                return res ;
+        Rect rect = new Rect(evx - controlBmpWidth / 2, evy - controlBmpHeight / 2, evx + controlBmpWidth / 2, evy + controlBmpHeight / 2);
+        int res = 0;
+        for (int i = 0; i < dstPs.length; i += 2) {
+            if (rect.contains((int) dstPs[i], (int) dstPs[i + 1])) {
+                return res;
             }
-            ++res ;
+            ++res;
         }
         return CTR_NONE;
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        int evX = (int)event.getX();
-        int evY = (int)event.getY();
+        int evX = (int) event.getX();
+        int evY = (int) event.getY();
         int operType = OPER_DEFAULT;
         operType = getOperationType(event);
         switch (operType) {
@@ -226,21 +230,24 @@ public class CommonImgMatrixView extends View {
         invalidate();//重绘
         return true;
     }
+
     /**
      * 移动
+     *
      * @param evx
      * @param evy
      * @author zhang_jin1
      */
-    private void translate(int evx , int evy){
+    private void translate(int evx, int evy) {
         prePivot.x += evx - lastPoint.x;
-        prePivot.y += evy -lastPoint.y;
+        prePivot.y += evy - lastPoint.y;
         deltaX = prePivot.x - lastPivot.x;
         deltaY = prePivot.y - lastPivot.y;
         lastPivot.x = prePivot.x;
         lastPivot.y = prePivot.y;
         setMatrix(OPER_TRANSLATE); //设置矩阵
     }
+
     /**
      * 缩放
      * 0---1---2
@@ -248,31 +255,32 @@ public class CommonImgMatrixView extends View {
      * 7   8   3
      * |       |
      * 6---5---4
+     *
      * @param event
      */
     private void scale(MotionEvent event) {
-        int pointIndex = current_ctr*2 ;
+        int pointIndex = current_ctr * 2;
         float px = dstPs[pointIndex];
-        float py = dstPs[pointIndex+1];
+        float py = dstPs[pointIndex + 1];
         float evx = event.getX();
         float evy = event.getY();
-        float oppositeX = 0 ;
-        float oppositeY = 0 ;
-        if(current_ctr<4 && current_ctr >= 0){
-            oppositeX = dstPs[pointIndex+8];
-            oppositeY = dstPs[pointIndex+9];
-        }else if(current_ctr >= 4){
-            oppositeX = dstPs[pointIndex-8];
-            oppositeY = dstPs[pointIndex-7];
+        float oppositeX = 0;
+        float oppositeY = 0;
+        if (current_ctr < 4 && current_ctr >= 0) {
+            oppositeX = dstPs[pointIndex + 8];
+            oppositeY = dstPs[pointIndex + 9];
+        } else if (current_ctr >= 4) {
+            oppositeX = dstPs[pointIndex - 8];
+            oppositeY = dstPs[pointIndex - 7];
         }
-        float temp1 = getDistanceOfTwoPoints(px,py,oppositeX,oppositeY);
-        float temp2 = getDistanceOfTwoPoints(evx,evy,oppositeX,oppositeY);
+        float temp1 = getDistanceOfTwoPoints(px, py, oppositeX, oppositeY);
+        float temp2 = getDistanceOfTwoPoints(evx, evy, oppositeX, oppositeY);
 
-        this.scaleValue = temp2 / temp1 ;
+        this.scaleValue = temp2 / temp1;
         symmetricPoint.x = (int) oppositeX;
-        symmetricPoint.y = (int)oppositeY;
+        symmetricPoint.y = (int) oppositeY;
 
-        Log.i("img", "scaleValue is "+scaleValue);
+        Log.i("img", "scaleValue is " + scaleValue);
         setMatrix(OPER_SCALE);
     }
 
@@ -283,14 +291,15 @@ public class CommonImgMatrixView extends View {
      * 7   8   3
      * |       |
      * 6---5---4
+     *
      * @param event
      */
     private void rotate(MotionEvent event) {
 
-        if(event.getPointerCount() == 2){
-            preDegree = computeDegree(new Point((int)event.getX(0), (int)event.getY(0)), new Point((int)event.getX(1), (int)event.getY(1)));
-        }else{
-            preDegree = computeDegree(new Point((int)event.getX(), (int)event.getY()), new Point((int)dstPs[16], (int)dstPs[17]));
+        if (event.getPointerCount() == 2) {
+            preDegree = computeDegree(new Point((int) event.getX(0), (int) event.getY(0)), new Point((int) event.getX(1), (int) event.getY(1)));
+        } else {
+            preDegree = computeDegree(new Point((int) event.getX(), (int) event.getY()), new Point((int) dstPs[16], (int) dstPs[17]));
         }
         setMatrix(OPER_ROTATE);
         lastDegree = preDegree;
@@ -299,23 +308,24 @@ public class CommonImgMatrixView extends View {
 
     /**
      * 计算两点与垂直方向夹角
+     *
      * @param p1
      * @param p2
      * @return
      */
-    public float computeDegree(Point p1, Point p2){
+    public float computeDegree(Point p1, Point p2) {
         float tran_x = p1.x - p2.x;
         float tran_y = p1.y - p2.y;
         float degree = 0.0f;
-        float angle = (float)(Math.asin(tran_x/Math.sqrt(tran_x*tran_x + tran_y* tran_y))*180/Math.PI);
-        if(!Float.isNaN(angle)){
-            if(tran_x >= 0 && tran_y <= 0){//第一象限
+        float angle = (float) (Math.asin(tran_x / Math.sqrt(tran_x * tran_x + tran_y * tran_y)) * 180 / Math.PI);
+        if (!Float.isNaN(angle)) {
+            if (tran_x >= 0 && tran_y <= 0) {//第一象限
                 degree = angle;
-            }else if(tran_x <= 0 && tran_y <= 0){//第二象限
+            } else if (tran_x <= 0 && tran_y <= 0) {//第二象限
                 degree = angle;
-            }else if(tran_x <= 0 && tran_y >= 0){//第三象限
+            } else if (tran_x <= 0 && tran_y >= 0) {//第三象限
                 degree = -180 - angle;
-            }else if(tran_x >= 0 && tran_y >= 0){//第四象限
+            } else if (tran_x >= 0 && tran_y >= 0) {//第四象限
                 degree = 180 - angle;
             }
         }
@@ -324,32 +334,33 @@ public class CommonImgMatrixView extends View {
 
     /**
      * 计算两个点之间的距离
+     *
      * @param p1
      * @param p2
      * @return
      */
-    private float getDistanceOfTwoPoints(Point p1, Point p2){
-        return (float)(Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)));
+    private float getDistanceOfTwoPoints(Point p1, Point p2) {
+        return (float) (Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)));
     }
 
-    private float getDistanceOfTwoPoints(float x1,float y1,float x2,float y2){
-        return (float)(Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
+    private float getDistanceOfTwoPoints(float x1, float y1, float x2, float y2) {
+        return (float) (Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
     }
 
 
     @Override
-    public void onDraw(Canvas canvas){
+    public void onDraw(Canvas canvas) {
         drawBackground(canvas);//绘制背景,以便测试矩形的映射
         canvas.drawBitmap(mainBmp, matrix, paint);//绘制主图片
         drawFrame(canvas);//绘制边框,以便测试点的映射
         drawControlPoints(canvas);//绘制控制点图片
     }
 
-    private void drawBackground(Canvas canvas){
+    private void drawBackground(Canvas canvas) {
         canvas.drawRect(dstRect, paintRect);
     }
 
-    private void drawFrame(Canvas canvas){
+    private void drawFrame(Canvas canvas) {
         canvas.drawLine(dstPs[0], dstPs[1], dstPs[4], dstPs[5], paintFrame);
         canvas.drawLine(dstPs[4], dstPs[5], dstPs[8], dstPs[9], paintFrame);
         canvas.drawLine(dstPs[8], dstPs[9], dstPs[12], dstPs[13], paintFrame);
@@ -357,10 +368,10 @@ public class CommonImgMatrixView extends View {
         canvas.drawPoint(dstPs[16], dstPs[17], paintFrame);
     }
 
-    private void drawControlPoints(Canvas canvas){
+    private void drawControlPoints(Canvas canvas) {
 
-        for (int i = 0; i < dstPs.length; i+=2) {
-            canvas.drawBitmap(controlBmp, dstPs[i]-controlBmpWidth/2, dstPs[i+1]-controlBmpHeight/2, paint);
+        for (int i = 0; i < dstPs.length; i += 2) {
+            canvas.drawBitmap(controlBmp, dstPs[i] - controlBmpWidth / 2, dstPs[i + 1] - controlBmpHeight / 2, paint);
         }
     }
 }

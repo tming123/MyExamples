@@ -25,7 +25,7 @@ public class BaseActivity extends AppCompatActivity {
 
         //判断手机是否是刘海屏
         boolean hasDisplayCutout = hasDisplayCutout(window);
-        if (hasDisplayCutout){
+        if (hasDisplayCutout) {
             //2.让内容区域延伸进刘海
             WindowManager.LayoutParams params = window.getAttributes();
             /**
@@ -50,10 +50,10 @@ public class BaseActivity extends AppCompatActivity {
         DisplayCutout displayCutout;
         View rootView = window.getDecorView();
         WindowInsets insets = rootView.getRootWindowInsets();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && insets != null){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && insets != null) {
             displayCutout = insets.getDisplayCutout();
-            if (displayCutout != null){
-                if (displayCutout.getBoundingRects() != null && displayCutout.getBoundingRects().size() > 0 && displayCutout.getSafeInsetTop() > 0){
+            if (displayCutout != null) {
+                if (displayCutout.getBoundingRects() != null && displayCutout.getBoundingRects().size() > 0 && displayCutout.getSafeInsetTop() > 0) {
                     return true;
                 }
             }
@@ -62,9 +62,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     //通常情况下，刘海的高就是状态栏的高
-    public int heightForDisplayCutout(){
+    public int heightForDisplayCutout() {
         int resID = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resID > 0){
+        if (resID > 0) {
             return getResources().getDimensionPixelSize(resID);
         }
         return 96;
